@@ -24,7 +24,12 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $post = new Post();
+        $post->comment = $request->comment;
+        $post->status = $request->status;
+        $post->save();
+
+        return response()->json($post, 201);
     }
 
     /**
@@ -32,7 +37,8 @@ class PostController extends Controller
      */
     public function show(string $id)
     {
-
+        $post = Post::find($id);
+        return response()->json($post);
     }
 
     /**
@@ -40,7 +46,12 @@ class PostController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $post = Post::find($id);
+        $post->comment = $request->comment;
+        $post->status = $request->status;
+        $post->save();
+
+        return response()->json($post);
     }
 
     /**
@@ -48,6 +59,17 @@ class PostController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $post = Post::find($id);
+            $post->delete();
+
+            return response()->json();
+        } catch (\Throwable $th) {
+            $response = [
+                "error" => "Erro tente novamente",
+                "code" => 39998732,
+            ];
+            return response()->json($response, 500);
+        }
     }
 }
