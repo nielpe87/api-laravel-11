@@ -35,4 +35,16 @@ class AuthController extends Controller
             return response()->json($th->getMessage(), 500);
         }
     }
+
+    public function logout(){
+
+        try {
+            //code...
+            Auth::user()->tokens()->delete();
+
+            return response()->json(["message"=> "token revogado"],200);
+        } catch (\Throwable $th) {
+            return response()->json(["message"=> $th->getMessage()],500);
+        }
+    }
 }
