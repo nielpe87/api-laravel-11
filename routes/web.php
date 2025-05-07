@@ -19,37 +19,3 @@ Route::get('/', function () {
 //     });
 // });
 
-
-
-// Route::middleware('auth')->group(function(){
-//     Route::resource('/posts', PostController::class);
-//     Route::get("/users", function(){
-
-//         echo "Listar usuários";
-//         echo auth()->user()->id;
-//     });
-
-// });
-
-// Route::get('/formLogin', function(){
-//     echo "Formulario de login";
-// })->name('login');
-
-// Route::get('/testemid', function(){
-//     echo "rota teste";
-// })->name("teste");
-
-// Route::get('/login', function(){
-//     //if (Auth::attempt(['email' => 'emanuel@teste.com', "password" => "123456"]) ) {
-//     if (Auth::attempt(['email' => 'ana@teste.com', "password" => "123456"]) ) {
-//         echo "Logado!";
-//     } else {
-//         echo "Erro";
-//     }
-// });
-
-// Route::get("/logout", function(){
-//     Auth::logout();
-
-//     echo "deslogado!";
-// });

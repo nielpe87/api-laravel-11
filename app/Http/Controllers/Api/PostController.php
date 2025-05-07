@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PostRequest;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
@@ -22,14 +26,30 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(PostRequest $request)
     {
-        $post = new Post();
-        $post->comment = $request->comment;
-        $post->status = $request->status;
-        $post->save();
+        try {
 
-        return response()->json($post, 201);
+            DB::beginTransaction();
+
+            $user = Auth::user();
+
+            $post = new Post();
+            $post->comment = $request->comment;
+            $post->status = $request->status;
+            $post->user_id = $user->id;
+            $post->save();
+
+            $post->categories()->sync($request->categories);
+
+            $data = Post::with('categories')->find($post->id);
+            DB::commit();
+
+            return response()->json($data, 201);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['message' => $th->getMessage()]);
+        }
     }
 
     /**
@@ -46,12 +66,26 @@ class PostController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $post = Post::find($id);
-        $post->comment = $request->comment;
-        $post->status = $request->status;
-        $post->save();
+        try {
+            DB::beginTransaction();
 
-        return response()->json($post);
+            $user = Auth::user();
+            $post = Post::find($id);
+            $post->comment = $request->comment;
+            $post->status = $request->status;
+            $post->user_id = $user->id;
+            $post->save();
+
+            $post->categories()->sync($request->categories);
+
+            $data = Post::with('categories')->find($post->id);
+            DB::commit();
+
+            return response()->json($data, 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['message' => $th->getMessage()]);
+        }
     }
 
     /**
